@@ -1,0 +1,46 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+*.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Data & model artifacts
+data/
+models/
+logs/
+checkpoints/
+*.h5
+*.pt
+*.pth
+*.onnx
+
+# Weights & Biases
+wandb/
+*.wandb
+
+# Outputs & generated files
+*.log
+*.out
+*.tmp
+*.bak
+
+# VS Code settings
+.vscode/
+
+# MacOS & system files
+.DS_Store
+Thumbs.db
+
+# GitHub Actions
+.github/workflows/*.log
