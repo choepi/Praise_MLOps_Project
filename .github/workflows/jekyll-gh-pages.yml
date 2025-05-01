@@ -1,7 +1,9 @@
 title: Rock-Paper-Scissors Hand Gesture Game
 description: A browser-based ML game using ONNX and MediaPipe
 theme: minima
- 
+
+on: [push, pull_request]
+
 # Set base URL if you're deploying to a project page (e.g., https://yourusername.github.io/rps-hand-game/)
 baseurl: "/Praise_MLOps_Project" # change to your repo name
  
