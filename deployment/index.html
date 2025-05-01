@@ -1,14 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Praise_MLOps Inference</title>
-    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
-    <script defer src="main.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rock-Paper-Scissors Hand Gesture Game</title>
+  <!-- MediaPipe Hand landmarks library -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <!-- ONNX Runtime Web library -->
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1>Praise_MLOps Live Inference</h1>
-    <input type="file" id="upload" accept="image/*">
-    <p id="result"></p>
+  <h1>Rock-Paper-Scissors Hand Gesture Game</h1>
+ 
+  <!-- Video element to display webcam feed -->
+  <video id="webcam" width="640" height="480" autoplay muted playsinline></video>
+  <!-- Hidden canvas to capture a frame for analysis -->
+  <canvas id="capture-canvas" width="640" height="480" style="display:none;"></canvas>
+ 
+  <!-- Area to display results -->
+  <div id="result"></div>
+ 
+  <!-- Play/Next Round button -->
+  <button id="play-button">Play Round</button>
+ 
+  <!-- Feedback section (shown after each round) -->
+  <div id="feedback" style="display:none;">
+    <p>Was the prediction correct? If not, select the correct gesture:</p>
+    <button class="feedback-btn" data-gesture="rock">✊ Rock</button>
+    <button class="feedback-btn" data-gesture="paper">✋ Paper</button>
+    <button class="feedback-btn" data-gesture="scissors">✌️ Scissors</button>
+  </div>
+ 
+  <!-- Download data button (appears if we have collected feedback data) -->
+  <button id="download-btn" style="display:none;">Download Collected Data</button>
+ 
+  <!-- Game and recognition logic script -->
+  <script src="main.js"></script>
 </body>
 </html>
