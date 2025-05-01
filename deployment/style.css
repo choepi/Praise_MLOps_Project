@@ -1,0 +1,70 @@
+body {
+  font-family: 'SF Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #fff; /* White background */
+  color: #333; /* Dark gray text */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Center vertically */
+  min-height: 100vh;
+  margin: 0; /* Remove default margins */
+  padding: 20px; /* Add some padding */
+  box-sizing: border-box; /* Include padding in element size */
+}
+ 
+h1 {
+  font-size: 3em; /* Large title */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 40px; /* More space below title */
+}
+ 
+#webcam,
+#capture-canvas {
+  width: 640px;
+  height: 480px;
+  margin-bottom: 20px; /* More space between video/canvas and next element */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Elevated effect */
+}
+ 
+#result {
+  text-align: center;
+  margin-bottom: 40px; /* More space below result */
+  font-size: 2em;
+  min-height: 30px;
+  /* Large text */
+  font-weight: bold;
+  min-height: 30px; /*reserve space when empty*/
+}
+ 
+#play-button, #download-btn, .feedback-btn {
+  padding: 12px 24px; /* Larger padding */
+  background-color: #f0f0f0; /* Light gray background */
+  color: #333; /* Dark gray text */
+  border: none; /* Remove borders */
+  border-radius: 10px; /* Rounded corners */
+  cursor: pointer;
+  margin: 10px; /* Space between buttons */
+ 
+#play-button {
+  padding: 18px 36px;
+  font-size: 1.2em;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Elevated effect */
+  transition: all 0.3s ease; /* Smooth transition for hover */
+}
+ 
+#play-button:hover, #download-btn:hover, .feedback-btn:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Stronger shadow on hover */
+  transform: translateY(-2px); /* Slightly move up on hover */
+}
+ 
+#feedback {
+  display: flex;
+  margin-bottom: 40px;
+}
+ 
+ 
+#feedback{
+    display:flex;
+}
