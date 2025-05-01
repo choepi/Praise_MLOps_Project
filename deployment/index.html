@@ -13,18 +13,18 @@
 </head>
 <body>
   <h1>Rock-Paper-Scissors Hand Gesture Game</h1>
-  
+ 
   <!-- Video element to display webcam feed -->
   <video id="webcam" width="640" height="480" autoplay muted playsinline></video>
   <!-- Hidden canvas to capture a frame for analysis -->
   <canvas id="capture-canvas" width="640" height="480" style="display:none;"></canvas>
-  
+ 
   <!-- Area to display results -->
   <div id="result"></div>
-  
+ 
   <!-- Play/Next Round button -->
   <button id="play-button">Play Round</button>
-  
+ 
   <!-- Feedback section (shown after each round) -->
   <div id="feedback" style="display:none;">
     <p>Was the prediction correct? If not, select the correct gesture:</p>
@@ -32,11 +32,11 @@
     <button class="feedback-btn" data-gesture="paper">✋ Paper</button>
     <button class="feedback-btn" data-gesture="scissors">✌️ Scissors</button>
   </div>
-  
+ 
   <!-- Download data button (appears if we have collected feedback data) -->
   <button id="download-btn" style="display:none;">Download Collected Data</button>
-  
+ 
   <!-- Game and recognition logic script -->
-  <script src="script.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
