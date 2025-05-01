@@ -26,7 +26,7 @@ jobs:
 
       - name: Run unit tests (pytest)
         run: |
-          if [ -d "tests" ]; then
+          if [ -d "scripts" ]; then
             pytest tests/ || echo "Tests failing - fix later"
           else
             echo "No tests folder yet, skipping tests"
