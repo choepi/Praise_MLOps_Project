@@ -138,7 +138,14 @@ async function playRound() {
     // Normalize landmarks to feature vector
     const inputFeatures = normalizeLandmarks(landmarks);
     // Prepare ONNX input tensor and run model
+    console.log("inputFeatures:", inputFeatures);
+    for (let i = 0; i < inputFeatures.length; i++) {
+      if (isNaN(inputFeatures[i]) || !isFinite(inputFeatures[i])) {
+        console.log("NAN or infinite value found in inputFeatures at index", i);
+      }
+    }
     const inputTensor = new ort.Tensor('float32', inputFeatures, [1, inputFeatures.length]);
+    console.log("inference is running")
     let prediction;
     try {
       const outputMap = await ortSession.run({ input: inputTensor });
