@@ -46,8 +46,8 @@ Thumbs.db
 .github/workflows/*.log
 
 # Training Data
-0_Training_images/
-1_other_gestures/
-1_Paper_images/
-1_Rock_images/
-1_Scissors/
+data/0_Training_images/
+data/1_other_gestures/
+data/1_Paper_images/
+data/1_Rock_images/
+data/1_Scissors/
