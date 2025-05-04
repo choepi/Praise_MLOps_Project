@@ -44,3 +44,10 @@ Thumbs.db
 
 # GitHub Actions
 .github/workflows/*.log
+
+# Training Data
+0_Training_images/
+1_other_gestures/
+1_Paper_images/
+1_Rock_images/
+1_Scissors/
