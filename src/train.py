@@ -2,6 +2,7 @@ import os
 import time
 import math
 import numpy as np
+import wandb
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -158,6 +159,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, epochs=10
     for epoch in range(epochs):
         model.train()
         total_loss, correct, total = 0, 0, 0
+
         for x, y in train_loader:
             x, y = x.to(device), y.to(device)
             optimizer.zero_grad()
@@ -168,8 +170,12 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, epochs=10
             total_loss += loss.item()
             correct += (out.argmax(1) == y).sum().item()
             total += y.size(0)
+
         acc = correct / total
-        print(f"📈 Epoch {epoch+1}: Loss={total_loss:.4f}, Accuracy={acc:.4f}")
+        avg_loss = total_loss / total
+        print(f"📈 Epoch {epoch+1}: Loss={avg_loss:.4f}, Accuracy={acc:.4f}")
+        wandb.log({"epoch": epoch + 1, "loss": avg_loss, "accuracy": acc})
+
     print("✅ Training finished")
     return model
 
@@ -202,9 +208,30 @@ def export_to_onnx(model, input_size=10):
 
 
 def main():
+    wandb.init(
+        project="praise-mlops",
+        name="gesture-run",
+        config={
+            "epochs": 50,
+            "batch_size": 128,
+            "lr": 0.001,
+            "model": "GestureClassifier",
+        },
+    )
+    batch_size = wandb.config.batch_size
+    epochs = wandb.config.epochs
+    lr = wandb.config.lr
     print("🔵 ENTERED MAIN FUNCTION")
     print("📥 Loading dataset...")
-    dataset = load_dataset("Javtor/rock-paper-scissors", num_proc=1)
+    try:
+        dataset = load_dataset("Javtor/rock-paper-scissors", num_proc=1)
+        print("✅ Dataset loaded")
+    except Exception as e:
+        print("❌ Dataset load failed:", e)
+        wandb.log({"error": str(e)})
+        wandb.finish()
+        return
+
     print("✅ Dataset loaded")
 
     split = dataset["train"].train_test_split(test_size=0.2, seed=42)
@@ -215,18 +242,18 @@ def main():
     val_feats = precompute_features(val_split)
     print("✅ Features precomputed")
     train_loader = DataLoader(
-        HandDataset(train_split, train_feats), batch_size=32, shuffle=True
+        HandDataset(train_split, train_feats), batch_size=batch_size, shuffle=True
     )
-    val_loader = DataLoader(HandDataset(val_split, val_feats), batch_size=64)
+    val_loader = DataLoader(HandDataset(val_split, val_feats), batch_size=batch_size)
 
     print("🧠 Initializing model...")
     model = GestureClassifier().to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=lr)
     print("✅ Model initialized")
 
     model = train_model(
-        model, train_loader, val_loader, criterion, optimizer, epochs=50
+        model, train_loader, val_loader, criterion, optimizer, epochs=epochs
     )
 
     export_to_onnx(model)
@@ -236,4 +263,12 @@ def main():
 
 if __name__ == "__main__":
     print(f"🧪 __name__ = {__name__}")
-    main()
+    try:
+        main()
+    except Exception as e:
+        import traceback
+
+        print("❌ Unhandled Exception:", e)
+        traceback.print_exc()
+        wandb.log({"error": str(e)})
+        wandb.finish()
