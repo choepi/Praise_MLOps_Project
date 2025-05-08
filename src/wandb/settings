@@ -1,0 +1,5 @@
+[default]
+entity = choepeld-zahw-ch
+project = mlops_train
+base_url = https://api.wandb.ai
+
