@@ -3,7 +3,7 @@ name: Deploy static site to GitHub Pages
 on:
   push:
     branches:
-      - Michi
+      - main
 
 permissions:
   contents: read
