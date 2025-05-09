@@ -7,6 +7,7 @@
   <!-- MediaPipe Hand landmarks library -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
   <!-- ONNX Runtime Web library -->
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
   <link rel="stylesheet" href="style.css" />
@@ -17,7 +18,7 @@
   <!-- Video element to display webcam feed -->
   <video id="webcam" width="640" height="480" autoplay muted playsinline></video>
   <!-- Hidden canvas to capture a frame for analysis -->
-  <canvas id="capture-canvas" width="640" height="480" style="display:none;"></canvas>
+  <canvas id="capture-canvas" width="640" height="480" style="border:1px solid gray;"></canvas> <!--canvas id="capture-canvas" width="640" height="480" style="display:none;"></canvas>
  
   <!-- Area to display results -->
   <div id="result"></div>
