@@ -56,31 +56,50 @@ async function loadModel() {
 }
  
 // 4. Helper function: Given a set of landmarks from MediaPipe (array of {x,y,z}), normalize them like in training
-function normalizeLandmarks(landmarks) {
-  // Convert landmarks to an array of [x,y] (we ignore z for consistency with training)
-  const coords = landmarks.map(lm => [lm.x, lm.y]);
-  // Translate so that the wrist (index 0) is at origin (0,0)
-  const wrist = coords[0].slice();  // copy of [x0, y0]
-  for (let i = 0; i < coords.length; i++) {
-    coords[i][0] -= wrist[0];
-    coords[i][1] -= wrist[1];
+function extract10Features(landmarks) {
+  function dist(p1, p2) {
+    return Math.sqrt(
+      (p1.x - p2.x) ** 2 +
+      (p1.y - p2.y) ** 2 +
+      (p1.z - p2.z) ** 2
+    );
   }
-  // Scale so that max distance from origin is 1
-  let maxDist = 0;
-  for (let [x, y] of coords) {
-    const dist = Math.sqrt(x*x + y*y);
-    if (dist > maxDist) maxDist = dist;
+
+  function angle(p1, p2, p3) {
+    const v1 = [p1.x - p2.x, p1.y - p2.y, p1.z - p2.z];
+    const v2 = [p3.x - p2.x, p3.y - p2.y, p3.z - p2.z];
+    const dot = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+    const mag1 = Math.sqrt(v1.reduce((sum, v) => sum + v*v, 0));
+    const mag2 = Math.sqrt(v2.reduce((sum, v) => sum + v*v, 0));
+    const cosAngle = Math.min(1, Math.max(-1, dot / (mag1 * mag2 || 1e-6)));
+    return Math.acos(cosAngle) * (180 / Math.PI);
   }
-  if (maxDist > 0) {
-    for (let i = 0; i < coords.length; i++) {
-      coords[i][0] /= maxDist;
-      coords[i][1] /= maxDist;
-    }
-  }
-  // Flatten to one array
-  const flatCoords = coords.flat();
-  return new Float32Array(flatCoords);
+
+  const MCP = [5, 9, 13, 17];
+  const palmCenter = {
+    x: MCP.map(i => landmarks[i].x).reduce((a, b) => a + b) / MCP.length,
+    y: MCP.map(i => landmarks[i].y).reduce((a, b) => a + b) / MCP.length,
+    z: MCP.map(i => landmarks[i].z).reduce((a, b) => a + b) / MCP.length,
+  };
+
+  const palmWidth = dist(landmarks[5], landmarks[17]) || 1e-6;
+
+  const features = [
+    dist(landmarks[4], palmCenter) / palmWidth,
+    dist(landmarks[8], palmCenter) / palmWidth,
+    dist(landmarks[12], palmCenter) / palmWidth,
+    dist(landmarks[16], palmCenter) / palmWidth,
+    dist(landmarks[20], palmCenter) / palmWidth,
+    angle(landmarks[2], landmarks[3], landmarks[4]),
+    angle(landmarks[6], landmarks[7], landmarks[8]),
+    angle(landmarks[10], landmarks[11], landmarks[12]),
+    angle(landmarks[14], landmarks[15], landmarks[16]),
+    angle(landmarks[18], landmarks[19], landmarks[20])
+  ];
+
+  return new Float32Array(features);
 }
+
  
 // 5. Game logic: countdown and then play one round (capture frame, run detection & inference, show result)
 async function playRound() {
@@ -143,7 +162,8 @@ async function playRound() {
     // Get the first hand's landmarks
     const landmarks = results.multiHandLandmarks[0];
     // Normalize landmarks to feature vector
-    const inputFeatures = normalizeLandmarks(landmarks);
+    const inputFeatures = extract10Features(landmarks);
+
     // Prepare ONNX input tensor and run model
     console.log("inputFeatures:", inputFeatures);
     for (let i = 0; i < inputFeatures.length; i++) {
