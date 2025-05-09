@@ -13,7 +13,7 @@ const collectedData = [];          // Array to store {image: dataURL, label: "ro
 const video = document.getElementById('webcam');
 const canvas = document.getElementById('capture-canvas');
 const resultDiv = document.getElementById('result');
-const playButton = document.getElementById('play-button');
+const emojiDisplay = document.getElementById('emoji-display'); // New: Element to display emoji
 const feedbackDiv = document.getElementById('feedback');
 const feedbackButtons = document.querySelectorAll('.feedback-btn');
 const downloadBtn = document.getElementById('download-btn');
@@ -56,31 +56,50 @@ async function loadModel() {
 }
  
 // 4. Helper function: Given a set of landmarks from MediaPipe (array of {x,y,z}), normalize them like in training
-function normalizeLandmarks(landmarks) {
-  // Convert landmarks to an array of [x,y] (we ignore z for consistency with training)
-  const coords = landmarks.map(lm => [lm.x, lm.y]);
-  // Translate so that the wrist (index 0) is at origin (0,0)
-  const wrist = coords[0].slice();  // copy of [x0, y0]
-  for (let i = 0; i < coords.length; i++) {
-    coords[i][0] -= wrist[0];
-    coords[i][1] -= wrist[1];
+function extract10Features(landmarks) {
+  function dist(p1, p2) {
+    return Math.sqrt(
+      (p1.x - p2.x) ** 2 +
+      (p1.y - p2.y) ** 2 +
+      (p1.z - p2.z) ** 2
+    );
   }
-  // Scale so that max distance from origin is 1
-  let maxDist = 0;
-  for (let [x, y] of coords) {
-    const dist = Math.sqrt(x*x + y*y);
-    if (dist > maxDist) maxDist = dist;
+
+  function angle(p1, p2, p3) {
+    const v1 = [p1.x - p2.x, p1.y - p2.y, p1.z - p2.z];
+    const v2 = [p3.x - p2.x, p3.y - p2.y, p3.z - p2.z];
+    const dot = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+    const mag1 = Math.sqrt(v1.reduce((sum, v) => sum + v*v, 0));
+    const mag2 = Math.sqrt(v2.reduce((sum, v) => sum + v*v, 0));
+    const cosAngle = Math.min(1, Math.max(-1, dot / (mag1 * mag2 || 1e-6)));
+    return Math.acos(cosAngle) * (180 / Math.PI);
   }
-  if (maxDist > 0) {
-    for (let i = 0; i < coords.length; i++) {
-      coords[i][0] /= maxDist;
-      coords[i][1] /= maxDist;
-    }
-  }
-  // Flatten to one array
-  const flatCoords = coords.flat();
-  return new Float32Array(flatCoords);
+
+  const MCP = [5, 9, 13, 17];
+  const palmCenter = {
+    x: MCP.map(i => landmarks[i].x).reduce((a, b) => a + b) / MCP.length,
+    y: MCP.map(i => landmarks[i].y).reduce((a, b) => a + b) / MCP.length,
+    z: MCP.map(i => landmarks[i].z).reduce((a, b) => a + b) / MCP.length,
+  };
+
+  const palmWidth = dist(landmarks[5], landmarks[17]) || 1e-6;
+
+  const features = [
+    dist(landmarks[4], palmCenter) / palmWidth,
+    dist(landmarks[8], palmCenter) / palmWidth,
+    dist(landmarks[12], palmCenter) / palmWidth,
+    dist(landmarks[16], palmCenter) / palmWidth,
+    dist(landmarks[20], palmCenter) / palmWidth,
+    angle(landmarks[2], landmarks[3], landmarks[4]),
+    angle(landmarks[6], landmarks[7], landmarks[8]),
+    angle(landmarks[10], landmarks[11], landmarks[12]),
+    angle(landmarks[14], landmarks[15], landmarks[16]),
+    angle(landmarks[18], landmarks[19], landmarks[20])
+  ];
+
+  return new Float32Array(features);
 }
+
  
 // 5. Game logic: countdown and then play one round (capture frame, run detection & inference, show result)
 async function playRound() {
@@ -95,16 +114,18 @@ async function playRound() {
   const ctx = canvas.getContext('2d');
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
  
+ 
+ 
   async function countdown() {
     return new Promise((resolve) => {
       let count = 3;
-      resultDiv.textContent = count;
+      resultDiv.innerHTML = `<span class="countdown">${count}</span>`;
       const interval = setInterval(() => {
         count--;
         if (count > 0) {
-          resultDiv.textContent = count;
+          resultDiv.innerHTML = `<span class="countdown">${count}</span>`;
         } else {
-          resultDiv.textContent = "Go!";
+          resultDiv.innerHTML = `<span class="countdown">Go!</span>`;
           clearInterval(interval);
           setTimeout(() => {
             resolve();
@@ -122,9 +143,14 @@ async function playRound() {
  
  
  
- 
- 
- 
+ // Map prediction to emoji
+  const emojiMap = {
+    "rock": "✊",
+    "paper": "🖐️",
+    "scissors": "✌️"
+  };
+
+
   // Define a one-time callback for hand results
   handDetector.onResults(async (results) => {
     // Remove the callback to avoid interference with future calls
@@ -136,9 +162,17 @@ async function playRound() {
     // Get the first hand's landmarks
     const landmarks = results.multiHandLandmarks[0];
     // Normalize landmarks to feature vector
-    const inputFeatures = normalizeLandmarks(landmarks);
+    const inputFeatures = extract10Features(landmarks);
+
     // Prepare ONNX input tensor and run model
+    console.log("inputFeatures:", inputFeatures);
+    for (let i = 0; i < inputFeatures.length; i++) {
+      if (isNaN(inputFeatures[i]) || !isFinite(inputFeatures[i])) {
+        console.log("NAN or infinite value found in inputFeatures at index", i);
+      }
+    }
     const inputTensor = new ort.Tensor('float32', inputFeatures, [1, inputFeatures.length]);
+    console.log("inference is running")
     let prediction;
     try {
       const outputMap = await ortSession.run({ input: inputTensor });
@@ -156,8 +190,11 @@ async function playRound() {
     const compMove = CLASS_NAMES[compIndex];
     // Determine winner
     let outcome;
+    let playerEmoji = emojiMap[prediction];
+    let computerEmoji = emojiMap[compMove];
+
     if (prediction === compMove) {
-      outcome = "It's a draw!";
+      outcome = "🤝 It's a draw!";
     } else {
       // Define win conditions: rock beats scissors, scissors beats paper, paper beats rock
       if (
@@ -165,13 +202,21 @@ async function playRound() {
         (prediction === "scissors" && compMove === "paper") ||
         (prediction === "paper" && compMove === "rock")
       ) {
-        outcome = "You win! 🎉";
+        outcome = "👑 You win! 🎉";
+        playerEmoji = `👑${playerEmoji}`; // Add crown to winner
       } else {
-        outcome = "You lose. 😢";
+        outcome = "😭 You lose. ";
+        computerEmoji = `👑${computerEmoji}`; // Add crown to winner
       }
     }
     // Display result
-    resultDiv.textContent = `You: ${prediction.toUpperCase()}, Computer: ${compMove.toUpperCase()}. ${outcome}`;
+    // Removed emojiDisplay logic
+    // emojiDisplay.textContent = emojiMap[prediction]; // Display the corresponding emoji
+    // emojiDisplay.style.display = 'block'; // Make the emoji visible
+
+    resultDiv.innerHTML = `<span class="player-emoji">${playerEmoji}</span> vs <span class="computer-emoji">${computerEmoji}</span><br>${outcome}`;
+    resultDiv.classList.add('animate-result'); // Add class for animation
+
     // Save the current frame image data and predicted label
     capturedImage = canvas.toDataURL("image/png");
     // Show feedback options
@@ -191,7 +236,7 @@ feedbackButtons.forEach(btn => {
     const correctGesture = btn.getAttribute('data-gesture');  // "rock", "paper", or "scissors"
     // Determine what the model predicted from resultDiv (we stored 'prediction' internally, but let's parse for safety)
     const resultText = resultDiv.textContent;
-    // Only proceed if the user-chosen gesture is different from model's prediction:
+    // Check if the user's chosen gesture matches the predicted one
     if (resultText && correctGesture && resultText.includes(`You: ${correctGesture.toUpperCase()}`)) {
       // If the prediction was actually correct (user clicked the same as predicted), no correction needed.
       feedbackDiv.style.display = 'none';
@@ -230,13 +275,11 @@ downloadBtn.addEventListener('click', () => {
   await setupWebcam();
   setupHandDetector();
   await loadModel();
-  // Enable the Play button after everything is ready
-  playButton.disabled = false;
-  playButton.textContent = "Play Round";
   console.log("Initialization complete.");
 })();
  
 // 9. Set up the Play button to start a round
+const playButton = document.getElementById('play-button');
 playButton.addEventListener('click', () => {
   playRound();
 });
