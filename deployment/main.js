@@ -30,8 +30,8 @@ function setupHandDetector() {
   handDetector.setOptions({
     maxNumHands: 1,
     modelComplexity: 1,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5,
+    minDetectionConfidence: 0.3,
+    minTrackingConfidence: 0.3,
   });
   handDetector.onResults(onHandResults);
   console.log("✅ MediaPipe Hands ready");
