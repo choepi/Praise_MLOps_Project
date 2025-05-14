@@ -1,73 +1,153 @@
 body {
   font-family: 'SF Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  background-color: #fff; /* White background */
-  color: #333; /* Dark gray text */
+  background-color: #fff;
+  /* White background */
+  color: #333;
+  /* Dark gray text */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Center vertically */
+  justify-content: center;
+  /* Center vertically */
   min-height: 100vh;
-  margin: 0; /* Remove default margins */
-  padding: 20px; /* Add some padding */
-  box-sizing: border-box; /* Include padding in element size */
+  margin: 0;
+  /* Remove default margins */
+  padding: 20px;
+  /* Add some padding */
+  box-sizing: border-box;
+  /* Include padding in element size */
 }
- 
+
 h1 {
-  font-size: 3em; /* Large title */
+  font-size: 3em;
+  /* Large title */
   font-weight: bold;
   text-align: center;
-  margin-bottom: 40px; /* More space below title */
+  margin-bottom: 40px;
+  /* More space below title */
 }
- 
+
 #webcam,
 #capture-canvas {
   width: 640px;
   height: 480px;
-  margin-bottom: 20px; /* More space between video/canvas and next element */
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Elevated effect */
+  margin-bottom: 20px;
+  /* More space between video/canvas and next element */
+  border-radius: 10px;
+  /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Elevated effect */
 }
- 
+
 #result {
   text-align: center;
-  margin-bottom: 40px; /* More space below result */
+  margin-bottom: 40px;
+  /* More space below result */
   font-size: 2em;
   min-height: 30px;
   /* Large text */
   font-weight: bold;
-  min-height: 30px; /*reserve space when empty*/
+  min-height: 30px;
+  /*reserve space when empty*/
 }
- 
-#play-button, #download-btn, .feedback-btn {
-  padding: 12px 24px; /* Larger padding */
-  background-color: #f0f0f0; /* Light gray background */
-  color: #333; /* Dark gray text */
-  border: none; /* Remove borders */
-  border-radius: 10px; /* Rounded corners */
+
+.countdown {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #ff5722;
+}
+
+.player-emoji,
+.computer-emoji {
+  font-size: 2em;
+  margin: 0 10px;
+  display: inline-block;
+}
+
+.animate-result {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+#play-button,
+#download-btn,
+.feedback-btn {
+  padding: 12px 24px;
+  /* Larger padding */
+  background-color: #f0f0f0;
+  /* Light gray background */
+  color: #333;
+  /* Dark gray text */
+  border: none;
+  /* Remove borders */
+  border-radius: 10px;
+  /* Rounded corners */
   cursor: pointer;
-  margin: 10px; /* Space between buttons */
+  margin: 10px;
+  /* Space between buttons */
+  transition: all 0.3s ease;
+  /* Smooth transition for hover */
 }
- 
+
 #play-button {
   padding: 18px 36px;
   font-size: 1.2em;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Elevated effect */
-  transition: all 0.3s ease; /* Smooth transition for hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Elevated effect */
 }
- 
-#play-button:hover, #download-btn:hover, .feedback-btn:hover {
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Stronger shadow on hover */
-  transform: translateY(-2px); /* Slightly move up on hover */
+
+#play-button:hover,
+#download-btn:hover,
+.feedback-btn:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  /* Stronger shadow on hover */
+  transform: translateY(-2px);
+  /* Slightly move up on hover */
 }
- 
+
 #feedback {
   display: flex;
-  margin-bottom: 40px;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  /* Consistent with your design */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
- 
- 
-#feedback{
-    display:flex;
+
+/* New upload status styles - matching your design language */
+#upload-status {
+  margin: 10px auto;
+  padding: 12px 24px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  /* Consistent with your design */
+  font-weight: bold;
+  text-align: center;
+  max-width: 300px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#upload-status.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+#upload-status.error {
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
 #scoreboard {

@@ -44,3 +44,12 @@ Thumbs.db
 
 # GitHub Actions
 .github/workflows/*.log
+
+# Precomputed features
+feature_cache/
+
+# ONNX metadata
+metadata.json
+
+# training artifacts
+training_curves.png
