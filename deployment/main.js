@@ -15,6 +15,8 @@ let capturedImage = null;           // Last captured image (for feedback storage
 const collectedData = [];           // Array to store data for misclassifications
 let isUploading = false;            // Flag to prevent multiple uploads
 window.lastPredictionFeatures = null; // Store last features for upload
+let userScore = 0;
+let pcScore = 0;
 
 // HTML elements
 const video = document.getElementById('webcam');
@@ -23,6 +25,9 @@ const resultDiv = document.getElementById('result');
 const feedbackDiv = document.getElementById('feedback');
 const feedbackButtons = document.querySelectorAll('.feedback-btn');
 const downloadBtn = document.getElementById('download-btn');
+const userScoreSpan = document.getElementById('user-score');
+const pcScoreSpan = document.getElementById('pc-score');
+const scoreboardDiv = document.getElementById('scoreboard');
 
 // Create upload status element if it doesn't exist
 let uploadStatusDiv = document.getElementById('upload-status');
@@ -43,6 +48,16 @@ async function setupWebcam() {
     console.log("Webcam video started");
   } catch (err) {
     alert("Error accessing webcam: " + err);
+  }
+}
+
+// Function to update the scoreboard display
+function updateScoreboard() {
+  if (userScoreSpan && pcScoreSpan) {
+    userScoreSpan.textContent = userScore;
+    pcScoreSpan.textContent = pcScore;
+  } else {
+    console.error("Error: Score span elements not found!");
   }
 }
 
@@ -342,14 +357,17 @@ async function playRound() {
         (prediction === "paper" && compMove === "rock")
       ) {
         outcome = "👑 You win! 🎉";
+        userScore++;
         playerEmoji = `👑${playerEmoji}`; // Add crown to winner
       } else {
         outcome = "😭 You lose. ";
+        pcScore++;
         computerEmoji = `👑${computerEmoji}`; // Add crown to winner
       }
     }
 
     // Display result
+    updateScoreboard();
     resultDiv.innerHTML = `<span class="player-emoji">${playerEmoji}</span> vs <span class="computer-emoji">${computerEmoji}</span><br>${outcome}`;
     resultDiv.classList.add('animate-result'); // Add class for animation
 
@@ -484,6 +502,7 @@ downloadBtn.addEventListener('click', () => {
   await setupWebcam();
   setupHandDetector();
   await loadModel();
+  updateScoreboard(); // Initialize scoreboard display
   console.log("Initialization complete.");
 })();
 

@@ -149,3 +149,41 @@ h1 {
   background-color: #f8d7da;
   color: #721c24;
 }
+
+#scoreboard {
+  font-family: 'SF Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #f2f2f7; /* Light gray background */
+  border-radius: 10px; /* Rounded corners for the box */
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  display: flex; /* To help with centering */
+  flex-direction: column; /* Stack the children vertically */
+  align-items: center; /* Center items horizontally */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#scoreboard h2 {
+  text-align: center; /* Center the "Score" title */
+  margin-bottom: 10px; /* Add some space below the title */
+  margin-top: 0;
+}
+
+#scoreboard p {
+  margin: 0; /* Remove default margin from the paragraph */
+}
+
+
+#scoreboard span {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #333; /* Dark gray text */
+  margin: 0 10px;
+}
+
+#user-score {
+  color: #007aff; /* Apple blue */
+}
+
+#pc-score {
+  color: #ff3b30; /* Apple red */
+}
