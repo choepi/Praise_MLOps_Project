@@ -503,6 +503,7 @@ downloadBtn.addEventListener('click', () => {
   setupHandDetector();
   await loadModel();
   updateScoreboard(); // Initialize scoreboard display
+  updateScoreboard(); // Initialize scoreboard display
   console.log("Initialization complete.");
 })();
 
