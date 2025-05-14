@@ -250,6 +250,8 @@ class GestureClassifier(nn.Module):
                 in_size = size
             
             self.output = nn.Linear(hidden_sizes[-1], num_classes)
+            
+            self.output_activation = nn.Softmax(dim=1)
     
     def forward(self, x):
         if not self.has_residual:
@@ -266,7 +268,7 @@ class GestureClassifier(nn.Module):
                     x = layer(x)
                 prev_x = x
             
-            return self.output(x)
+            return self.output_activation(self.output(x))
 
 # Function to precompute features for all images
 def precompute_features(dataset_split, batch_size=32, feature_groups=None, split_name="train"):
@@ -581,7 +583,7 @@ def main():
     
     # W&B parameters
     parser.add_argument('--wandb', action='store_true', help='Enable Weights & Biases logging')
-    parser.add_argument('--team', type=str, default=None, help='W&B team name')
+    parser.add_argument('--team', type=str, default='praise_mlops', help='W&B team name')
     parser.add_argument('--project', type=str, default='rock-paper-scissors', help='W&B project name')
     parser.add_argument('--name', type=str, default=None, help='W&B run name')
     parser.add_argument('--sweep', type=lambda x: x.lower() == 'true', default=False, 

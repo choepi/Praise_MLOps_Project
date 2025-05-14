@@ -71,7 +71,7 @@ async function loadModel() {
   }
 }
 
-// 4. Enhanced hand feature extraction function
+// 4. Hand feature extraction function
 function extractHandFeatures(landmarks) {
   // Helper function to calculate distance
   function distance(p1, p2) {
@@ -177,7 +177,7 @@ function extractHandFeatures(landmarks) {
   ]);
 }
 
-// 5. Improved gesture prediction function
+// 5. Gesture prediction function
 async function predictGesture(landmarks) {
   if (!ortSession || !landmarks) {
     console.error("ONNX session or landmarks not available");
@@ -256,11 +256,6 @@ async function uploadImageToCloudinary(imageBlob, label) {
 
   // Add custom metadata for your ML pipeline
   formData.append('context', `label=${label}`); // You can add more context fields
-
-  // Add feature metadata if available
-  if (window.lastPredictionFeatures) {
-    formData.append('context', `features=${JSON.stringify(window.lastPredictionFeatures)}`);
-  }
 
   try {
     // Make the upload request
