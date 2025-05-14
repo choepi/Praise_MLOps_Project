@@ -2,6 +2,9 @@
  
 // Mapping of class indices to gesture names, per training: 0=paper, 1=rock, 2=scissors
 const CLASS_NAMES = ["paper", "rock", "scissors"];
+
+
+
  
 // Global state
 let ortSession = null;              // ONNX Runtime inference session
@@ -17,6 +20,11 @@ const emojiDisplay = document.getElementById('emoji-display'); // New: Element t
 const feedbackDiv = document.getElementById('feedback');
 const feedbackButtons = document.querySelectorAll('.feedback-btn');
 const downloadBtn = document.getElementById('download-btn');
+let userScore = 0;
+let pcScore = 0;
+const userScoreSpan = document.getElementById('user-score'); // New: Element to display user score
+const pcScoreSpan = document.getElementById('pc-score');     // New: Element to display PC score
+const scoreboardDiv = document.getElementById('scoreboard');
  
 // 1. Initialize webcam video stream
 async function setupWebcam() {
@@ -101,6 +109,16 @@ function extract10Features(landmarks) {
 }
 
  
+// Function to update the scoreboard display
+function updateScoreboard() {
+  if (userScoreSpan && pcScoreSpan) {
+    userScoreSpan.textContent = userScore;
+    pcScoreSpan.textContent = pcScore;
+  } else {
+    console.error("Error: Score span elements not found!");
+  }
+}
+
 // 5. Game logic: countdown and then play one round (capture frame, run detection & inference, show result)
 async function playRound() {
   // Hide feedback from previous round (if any)
@@ -202,10 +220,12 @@ async function playRound() {
         (prediction === "scissors" && compMove === "paper") ||
         (prediction === "paper" && compMove === "rock")
       ) {
-        outcome = "👑 You win! 🎉";
+ outcome = "👑 You win! 🎉";
+        userScore++; // Increment user score
         playerEmoji = `👑${playerEmoji}`; // Add crown to winner
       } else {
         outcome = "😭 You lose. ";
+        pcScore++; // Increment PC score
         computerEmoji = `👑${computerEmoji}`; // Add crown to winner
       }
     }
@@ -214,6 +234,7 @@ async function playRound() {
     // emojiDisplay.textContent = emojiMap[prediction]; // Display the corresponding emoji
     // emojiDisplay.style.display = 'block'; // Make the emoji visible
 
+    updateScoreboard(); // Update scoreboard after each round
     resultDiv.innerHTML = `<span class="player-emoji">${playerEmoji}</span> vs <span class="computer-emoji">${computerEmoji}</span><br>${outcome}`;
     resultDiv.classList.add('animate-result'); // Add class for animation
 
@@ -275,6 +296,7 @@ downloadBtn.addEventListener('click', () => {
   await setupWebcam();
   setupHandDetector();
   await loadModel();
+  updateScoreboard(); // Initialize scoreboard display
   console.log("Initialization complete.");
 })();
  
