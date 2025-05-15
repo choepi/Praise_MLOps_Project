@@ -24,6 +24,7 @@ checkpoints/
 *.pt
 *.pth
 *.onnx
+!deployment/gesture_classifier.onnx
 
 # Weights & Biases
 wandb/
