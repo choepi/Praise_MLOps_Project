@@ -10,6 +10,7 @@
   <!-- ONNX Runtime Web library -->
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
   <link rel="stylesheet" href="style.css" />
+  
 </head>
 <body>
   <h1>Rock-Paper-Scissors Hand Gesture Game</h1>
@@ -46,5 +47,16 @@
  
   <!-- Game and recognition logic script -->
   <script src="main.js"></script>
+
+  <!-- Pop up pricavy aknowledged -->
+  <div id="privacy-popup" style="display:none;" class="popup">
+  <div class="popup-content">
+    <h3>📢 Data Privacy Notice</h3>
+    <p>This student project uses your webcam to recognize hand gestures.</p>
+    <p>Gesture images may be temporarily uploaded to <strong>Cloudinary</strong> for academic model training.</p>
+    <p><strong>No personal data</strong> is collected or shared. By using this demo, you accept this.</p>
+    <button id="dismiss-popup">I Understand</button>
+  </div>
+</div>
 </body>
 </html>
