@@ -5,7 +5,7 @@ An Interactive ML-Powered Game Using Real-Time Hand Recognition
 
 ---
 
-## 🎯 Project Overview
+## 🎯 Project Overview 
 
 This project demonstrates a complete machine learning lifecycle—**from data collection to real-time inference**—through a Rock-Paper-Scissors game controlled by **hand gestures captured via webcam**. Designed for edge deployment, the model runs entirely in-browser, with no need for a server or backend.
 
