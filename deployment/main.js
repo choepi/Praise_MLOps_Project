@@ -512,3 +512,18 @@ const playButton = document.getElementById('play-button');
 playButton.addEventListener('click', () => {
   playRound();
 });
+
+// 13. Privacy popup logic
+window.addEventListener('DOMContentLoaded', () => {
+  const popup = document.getElementById('privacy-popup');
+  const dismissBtn = document.getElementById('dismiss-popup');
+
+  if (!sessionStorage.getItem('privacyConsent')) {
+    popup.style.display = 'flex';
+  }
+
+  dismissBtn.addEventListener('click', () => {
+    sessionStorage.setItem('privacyConsent', 'true');
+    popup.style.display = 'none';
+  });
+});
