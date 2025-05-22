@@ -1,4 +1,6 @@
 # ✋ Rock-Paper-Scissors with Hand Gestures  
+![Preview](preview.png)
+
 An Interactive ML-Powered Game Using Real-Time Hand Recognition
 
 👉 [Try the App](https://choepi.github.io/Praise_MLOps_Project/)
