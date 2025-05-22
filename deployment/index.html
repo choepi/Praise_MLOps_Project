@@ -4,16 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rock-Paper-Scissors Hand Gesture Game</title>
+  
   <!-- MediaPipe Hand landmarks library -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  
   <!-- ONNX Runtime Web library -->
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
   <link rel="stylesheet" href="style.css" />
   
 </head>
 <body>
-  <h1>Rock-Paper-Scissors Hand Gesture Game</h1>
+  <h1>🎮 Rock-Paper-Scissors Game</h1>
+  <p class="subtitle">Play rock-paper-scissors using hand gestures!</p>
 
   <div id="scoreboard">
     <h2>Score</h2>
@@ -21,7 +24,10 @@
   </div>
  
   <!-- Video element to display webcam feed -->
-  <video id="webcam" width="640" height="480" autoplay muted playsinline></video>
+  <div class="video-container">
+    <video id="webcam" width="640" height="480" autoplay muted playsinline></video>
+  </div>
+  
   <!-- Hidden canvas to capture a frame for analysis -->
   <canvas id="capture-canvas" width="640" height="480" style="display:none;"></canvas>
  
@@ -29,7 +35,7 @@
   <div id="result"></div>
  
   <!-- Play/Next Round button -->
-  <button id="play-button">Play Round</button>
+  <button id="play-button">🎯 Play Round</button>
  
   <!-- Feedback section (shown after each round) -->
   <div id="feedback" style="display:none;">
@@ -48,15 +54,15 @@
   <!-- Game and recognition logic script -->
   <script src="main.js"></script>
 
-  <!-- Pop up pricavy aknowledged -->
+  <!-- Privacy popup -->
   <div id="privacy-popup" style="display:none;" class="popup">
-  <div class="popup-content">
-    <h3>📢 Data Privacy Notice</h3>
-    <p>This student project uses your webcam to recognize hand gestures.</p>
-    <p>Gesture images may be temporarily uploaded to <strong>Cloudinary</strong> for academic model training.</p>
-    <p><strong>No personal data</strong> is collected or shared. By using this demo, you accept this.</p>
-    <button id="dismiss-popup">I Understand</button>
+    <div class="popup-content">
+      <h3>📢 Data Privacy Notice</h3>
+      <p>This student project uses your webcam to recognize hand gestures.</p>
+      <p>Gesture images may be temporarily uploaded to <strong>Cloudinary</strong> for academic model training.</p>
+      <p><strong>No personal data</strong> is collected or shared. By using this demo, you accept this.</p>
+      <button id="dismiss-popup">I Understand</button>
+    </div>
   </div>
-</div>
 </body>
 </html>
