@@ -69,24 +69,6 @@ This project demonstrates a complete machine learning lifecycle—**from data co
 
 ---
 
-## 📂 Repository Structure
-
-
-📁 src/
-┣ 📄 train.py              ← Training pipeline
-┣ 📄 model.onnx            ← Optimized gesture model
-┣ 📁 web/
-┃ ┣ 📄 index.html          ← Frontend UI
-┃ ┣ 📄 script.js           ← Inference & game logic
-┃ ┗ 📄 styles.css          ← Styling
-📁 data/
-┣ 📁 raw/                  ← Labeled image dataset
-┣ 📁 feedback/             ← Flagged misclassified gestures
-📄 README.md
-
-
----
-
 ## 🎓 Why This Project?
 
 This app is a compact demonstration of:
