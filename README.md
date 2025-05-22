@@ -1,5 +1,5 @@
 # ✋ Rock-Paper-Scissors with Hand Gestures  
-![Preview](preview.jpg)
+![Preview of Rock-Paper-Scissors Game](preview.jpg)
 
 An Interactive ML-Powered Game Using Real-Time Hand Recognition
 
