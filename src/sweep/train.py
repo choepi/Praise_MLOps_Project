@@ -18,7 +18,7 @@ import hashlib
 
 # Set device to GPU if available, otherwise CPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(f"✅ Using device: {device}")
+print(f" Using device: {device}")
 
 # Initialize MediaPipe Hands
 mp_hands = mp.solutions.hands
@@ -27,7 +27,7 @@ hands = mp_hands.Hands(
     max_num_hands=1,
     min_detection_confidence=0.5
 )
-print("✅ MediaPipe Hands initialized")
+print(" MediaPipe Hands initialized")
 
 # Helper function to calculate Euclidean distance between 3D points
 def distance(p1, p2):
@@ -272,7 +272,7 @@ class GestureClassifier(nn.Module):
 
 # Function to precompute features for all images
 def precompute_features(dataset_split, batch_size=32, feature_groups=None, split_name="train"):
-    print(f"🟡 Precomputing features for {len(dataset_split)} samples ({split_name})...", flush=True)
+    print(f" Precomputing features for {len(dataset_split)} samples ({split_name})...", flush=True)
     features_list = []
     start_time = time.time()
     
@@ -336,10 +336,10 @@ def precompute_features(dataset_split, batch_size=32, feature_groups=None, split
         elapsed = time.time() - start_time
         batch_time = time.time() - batch_start
         if i % 5 == 0 or i + batch_size >= len(dataset_split):
-            print(f"   ⏱️ [{split_name}] {total_processed}/{len(dataset_split)} processed — {elapsed:.1f}s elapsed ({batch_time:.2f}s/batch)", flush=True)
+            print(f"    [{split_name}] {total_processed}/{len(dataset_split)} processed — {elapsed:.1f}s elapsed ({batch_time:.2f}s/batch)", flush=True)
     
     total_time = time.time() - start_time
-    print(f"✅ Done with {split_name}: {len(features_list)} features in {total_time:.1f}s ({total_time/len(features_list)*1000:.1f}ms/sample)\n", flush=True)
+    print(f" Done with {split_name}: {len(features_list)} features in {total_time:.1f}s ({total_time/len(features_list)*1000:.1f}ms/sample)\n", flush=True)
     return np.array(features_list)
 
 def get_feature_cache_path(dataset_name, split_name, batch_size, feature_groups):
@@ -367,18 +367,18 @@ def get_or_compute_features(dataset_split, split_name, batch_size=32, feature_gr
     
     # Check if features are already cached
     if os.path.exists(cache_path):
-        print(f"📂 Loading cached features for {split_name} from {cache_path}")
+        print(f" Loading cached features for {split_name} from {cache_path}")
         start_time = time.time()
         features = np.load(cache_path)
-        print(f"✅ Loaded {len(features)} {split_name} features in {time.time() - start_time:.2f}s")
+        print(f" Loaded {len(features)} {split_name} features in {time.time() - start_time:.2f}s")
         return features
     
     # Compute features
-    print(f"🔄 No cached features found for {split_name}. Computing from scratch...")
+    print(f" No cached features found for {split_name}. Computing from scratch...")
     features = precompute_features(dataset_split, batch_size, feature_groups, split_name)
     
     # Cache the features
-    print(f"💾 Caching features to {cache_path}")
+    print(f" Caching features to {cache_path}")
     np.save(cache_path, features)
     
     return features
@@ -386,7 +386,7 @@ def get_or_compute_features(dataset_split, split_name, batch_size=32, feature_gr
 # Training function
 def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs=30, 
                 use_wandb=False, scheduler=None):
-    print("🔁 Starting training loop...")
+    print(" Starting training loop...")
     best_val_acc = 0.0
     train_losses = []
     val_losses = []
@@ -463,7 +463,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         # Calculate epoch time
         epoch_time = time.time() - epoch_start
         
-        print(f"📈 Epoch {epoch+1}/{num_epochs} ({epoch_time:.1f}s) - "
+        print(f" Epoch {epoch+1}/{num_epochs} ({epoch_time:.1f}s) - "
               f"Train Loss: {epoch_loss:.4f}, Train Acc: {epoch_acc:.4f}, "
               f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}, "
               f"LR: {current_lr:.6f}")
@@ -484,7 +484,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             torch.save(model.state_dict(), 'best_gesture_classifier.pth')
-            print(f"🏆 New best model saved with accuracy: {best_val_acc:.4f}")
+            print(f" New best model saved with accuracy: {best_val_acc:.4f}")
             
             # Log best model checkpoint to W&B
             if use_wandb:
@@ -492,7 +492,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
                 wandb.save('best_gesture_classifier.pth')
     
     total_time = time.time() - start_time
-    print(f"✅ Training finished in {total_time:.1f}s ({total_time/num_epochs:.1f}s/epoch)")
+    print(f" Training finished in {total_time:.1f}s ({total_time/num_epochs:.1f}s/epoch)")
     
     # Plot training curves
     plt.figure(figsize=(12, 5))
@@ -522,7 +522,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
 
 # Function to export model to ONNX
 def export_to_onnx(model, input_size=17, use_wandb=False):
-    print("📦 Exporting model to ONNX format...")
+    print(" Exporting model to ONNX format...")
     model.eval()
     dummy_input = torch.randn(1, input_size, device=device)
     
@@ -539,8 +539,8 @@ def export_to_onnx(model, input_size=17, use_wandb=False):
         output_names=['output'],
         dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}
     )
-    print("✅ Model exported to ONNX format")
-    print("📋 Label mapping in exported model: output[0]=paper, output[1]=rock, output[2]=scissor")
+    print(" Model exported to ONNX format")
+    print(" Label mapping in exported model: output[0]=paper, output[1]=rock, output[2]=scissor")
     
     # Log ONNX model to W&B
     if use_wandb:
@@ -569,11 +569,11 @@ def export_to_onnx(model, input_size=17, use_wandb=False):
         
         # Log the artifact with all files already added
         wandb.log_artifact(artifact)
-        print(f"✅ ONNX model uploaded to Weights & Biases: {wandb.run.name}")
+        print(f" ONNX model uploaded to Weights & Biases: {wandb.run.name}")
 
 # Main function to run the training pipeline
 def main():
-    print("🔵 ENTERED MAIN FUNCTION")
+    print(" ENTERED MAIN FUNCTION")
     
     def parse_none(value):
         return None if value.lower() == 'none' else value
@@ -632,13 +632,13 @@ def main():
     args = parser.parse_args()
     
     # Create export directory if it doesn't exist
-    print(f"📁 Using export directory: {args.export_dir}")
+    print(f" Using export directory: {args.export_dir}")
     os.makedirs(args.export_dir, exist_ok=True)
     
     # Parse hidden_sizes
     if args.sweep:
         # In sweep mode, we need to get config from wandb
-        print("🔄 Initializing sweep run...")
+        print(" Initializing sweep run...")
         if args.team:
             wandb.init(project=args.project, entity=args.team)
         else:
@@ -646,7 +646,7 @@ def main():
             
         # Get hidden_sizes from wandb config
         hidden_sizes_raw = wandb.config.get('hidden_sizes', args.hidden_sizes)
-        print(f"📊 Hidden sizes from sweep config: {hidden_sizes_raw}")
+        print(f" Hidden sizes from sweep config: {hidden_sizes_raw}")
     else:
         # Normal mode - get from args
         hidden_sizes_raw = args.hidden_sizes
@@ -662,22 +662,22 @@ def main():
     elif isinstance(hidden_sizes_raw, (int, float)):
         hidden_sizes = [int(hidden_sizes_raw)]
     else:
-        print(f"⚠️ WARNING: Unexpected hidden_sizes format: {type(hidden_sizes_raw)}. Using default [32]")
+        print(f" WARNING: Unexpected hidden_sizes format: {type(hidden_sizes_raw)}. Using default [32]")
         hidden_sizes = [32]
     
-    print(f"🧠 Using hidden sizes: {hidden_sizes}")
+    print(f" Using hidden sizes: {hidden_sizes}")
     
     # Parse feature groups
     if args.feature_groups.lower() == 'all':
         feature_groups = None  # Use all features
-        print("🔍 Using all feature groups")
+        print(" Using all feature groups")
     else:
         feature_groups = args.feature_groups.split(',')
-        print(f"🔍 Using selected feature groups: {feature_groups}")
+        print(f" Using selected feature groups: {feature_groups}")
     
     # Initialize Weights & Biases
     if args.wandb or args.sweep:
-        print("📊 Setting up Weights & Biases...")
+        print(" Setting up Weights & Biases...")
         # Create config dictionary
         wandb_config = {
             # Training parameters
@@ -736,29 +736,29 @@ def main():
         
         # Log system info and dependencies
         wandb.run.log_code(".", include_fn=lambda path: path.endswith(".py"))
-        print(f"✅ W&B initialized: {wandb.run.name}")
+        print(f" W&B initialized: {wandb.run.name}")
     
     # Load dataset from Hugging Face
-    print(f"📥 Loading dataset from Hugging Face: {args.dataset}")
+    print(f" Loading dataset from Hugging Face: {args.dataset}")
     start_time = time.time()
     try:
         dataset = load_dataset(args.dataset)
-        print(f"✅ Dataset loaded in {time.time() - start_time:.2f}s")
+        print(f" Dataset loaded in {time.time() - start_time:.2f}s")
     except Exception as e:
-        print(f"⚠️ Error loading dataset {args.dataset}: {e}")
-        print("🔄 Falling back to default dataset: Javtor/rock-paper-scissors")
+        print(f" Error loading dataset {args.dataset}: {e}")
+        print(" Falling back to default dataset: Javtor/rock-paper-scissors")
         dataset = load_dataset("Javtor/rock-paper-scissors")
-        print(f"✅ Fallback dataset loaded in {time.time() - start_time:.2f}s")
+        print(f" Fallback dataset loaded in {time.time() - start_time:.2f}s")
     
-    print(f"📊 Dataset stats: {len(dataset['train'])} training samples")
+    print(f" Dataset stats: {len(dataset['train'])} training samples")
     
     # Split the training set into training and validation
-    print("🔪 Splitting dataset into train/validation sets...")
+    print(" Splitting dataset into train/validation sets...")
     train_val_split = dataset['train'].train_test_split(test_size=0.2, seed=42, stratify_by_column='label')
     train_dataset_split = train_val_split['train']
     val_dataset_split = train_val_split['test']
     
-    print(f"🔍 Split result: {len(train_dataset_split)} train / {len(val_dataset_split)} validation images")
+    print(f" Split result: {len(train_dataset_split)} train / {len(val_dataset_split)} validation images")
     
     # Get features with caching
     train_features = get_or_compute_features(
@@ -771,10 +771,10 @@ def main():
     
     # Get input size based on selected features
     input_size = train_features.shape[1] if train_features.size > 0 else 17
-    print(f"📏 Using {input_size} features for model training")
+    print(f" Using {input_size} features for model training")
     
     # Create datasets with precomputed features
-    print("🧩 Creating PyTorch datasets...")
+    print(" Creating PyTorch datasets...")
     train_dataset = HuggingFaceHandGestureDataset(
         train_dataset_split, precomputed_features=train_features
     )
@@ -784,12 +784,12 @@ def main():
     )
     
     # Create data loaders
-    print("🔄 Creating data loaders...")
+    print(" Creating data loaders...")
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
     
     # Initialize model with specified architecture
-    print("🧠 Initializing model architecture...")
+    print(" Initializing model architecture...")
     model = GestureClassifier(
         input_size=input_size,
         hidden_sizes=hidden_sizes,
@@ -804,7 +804,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
     
     # Configure optimizer based on args
-    print(f"⚙️ Setting up {args.optimizer} optimizer with lr={args.lr}...")
+    print(f" Setting up {args.optimizer} optimizer with lr={args.lr}...")
     if args.optimizer == 'adam':
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     elif args.optimizer == 'sgd':
@@ -815,7 +815,7 @@ def main():
     
     # Configure learning rate scheduler
     if args.scheduler:
-        print(f"📈 Using {args.scheduler} learning rate scheduler")
+        print(f" Using {args.scheduler} learning rate scheduler")
         if args.scheduler == 'step':
             scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
         elif args.scheduler == 'cosine':
@@ -825,11 +825,11 @@ def main():
                                                            patience=args.step_size//2)
     else:
         scheduler = None
-        print("📈 No learning rate scheduler selected")
+        print(" No learning rate scheduler selected")
     
     # Log model architecture to W&B
     if args.wandb or args.sweep:
-        print("👁️ Setting up W&B model watching...")
+        print(" Setting up W&B model watching...")
         wandb.watch(model, criterion=criterion, log="all", log_freq=10)
     
     # Train the model
@@ -846,7 +846,7 @@ def main():
     
     # Test on the test set if available
     if 'test' in dataset:
-        print("\n🧪 Evaluating on test set...")
+        print("\n Evaluating on test set...")
         test_features = get_or_compute_features(
             dataset['test'], "test", batch_size=args.batch_size, feature_groups=feature_groups
         )
@@ -857,7 +857,7 @@ def main():
         
         # Load best model
         best_model_path = os.path.join(args.export_dir, 'best_gesture_classifier.pth')
-        print(f"📂 Loading best model from: {best_model_path}")
+        print(f" Loading best model from: {best_model_path}")
         model.load_state_dict(torch.load(best_model_path))
         model.eval()
         
@@ -874,22 +874,22 @@ def main():
                 correct += (predicted == labels).sum().item()
         
         test_acc = correct / total
-        print(f"📊 Test accuracy: {test_acc:.4f} (evaluated in {time.time() - start_time:.2f}s)")
+        print(f" Test accuracy: {test_acc:.4f} (evaluated in {time.time() - start_time:.2f}s)")
         
         # Log test accuracy to W&B
         if use_wandb:
             wandb.run.summary["test_accuracy"] = test_acc
     
     # Clean up MediaPipe resources
-    print("🧹 Cleaning up resources...")
+    print(" Cleaning up resources...")
     hands.close()
     
     # Finish W&B run
     if use_wandb:
-        print("📊 Finalizing W&B run...")
+        print(" Finalizing W&B run...")
         wandb.finish()
     
-    print("🎉 Training pipeline complete!")
+    print(" Training pipeline complete!")
 
 if __name__ == "__main__":
     main()
