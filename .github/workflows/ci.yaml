@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt || true
-          pip install black pytest
+          pip install black pytest numpy torch mediapipe scikit-learn tqdm matplotlib datasets pillow wandb 
 
       - name: Code formatting check (black)
         run: |
@@ -26,11 +26,13 @@ jobs:
 
       - name: Run unit tests (pytest)
         run: |
-          if [ -d "scripts" ]; then
-            pytest scripts/ || echo "Tests failing - fix later"
+          if [ -d "tests" ]; then
+            pytest tests/ || echo "Tests failing - fix later"
           else
-            echo "No scripts folder found, skipping tests"
+            echo "No tests folder found, skipping tests"
           fi
+        env:
+          PYTHONPATH: .
 
       - name: Check model files
         run: |
