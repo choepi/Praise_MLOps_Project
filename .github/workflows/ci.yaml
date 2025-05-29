@@ -31,6 +31,8 @@ jobs:
           else
             echo "No tests folder found, skipping tests"
           fi
+        env:
+          PYTHONPATH: .
 
       - name: Check model files
         run: |
