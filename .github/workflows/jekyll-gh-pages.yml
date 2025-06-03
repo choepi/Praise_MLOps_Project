@@ -23,14 +23,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5  # ✅ Updated to latest
+        uses: actions/configure-pages@v5 
 
       - name: Upload static content
-        uses: actions/upload-pages-artifact@v3  # ✅ No longer v2
+        uses: actions/upload-pages-artifact@v3  
 
         with:
-          path: deployment  # Your folder with index.html etc.
+          path: deployment  
 
       - name: Deploy to GitHub Pages
         id: deploy
-        uses: actions/deploy-pages@v4  # ✅ Latest version
+        uses: actions/deploy-pages@v4 
